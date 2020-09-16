@@ -4,146 +4,173 @@ from node import Node
 def read_file():
     data = []
     # open file for reading, "with" handles automatically closing the file
-    with open('data/a1a.train', 'r') as file: 
+    with open('data/a1a.train', 'r') as file:
         for line in file:
             example = line.split()
             # store label (i.e. -1 or 1) along w/ associated feature vector as an array (<label>, <index>:<value>, ...)
             data.append(example)
     return data
 
-def separate_labels_from_features(examples):
-    labels = []
+def get_measured_attributes(examples):
+    found_attributes = []
     for example in examples:
-        labels.append(example.pop(0))
-    return labels
+        for value in example:
+            if ':' in value:
+                attribute = value.split(':').pop(0)
+                if attribute not in found_attributes:
+                    found_attributes.append(value.split(':').pop(0))
+    return found_attributes
 
-def get_positive_attribute_count(attributes, a):
-    pos = 0
-    for aList in attributes:
-        for attribute in aList:
-            if attribute == a:
-                pos += 1
-    return pos
-    
-def find_highest_info_gain(labels, attributes):
+#####
+
+def get_attribute_entropy(examples, attribute):
+    posLabelCount = 0
+    negLabelCount = 0
+    posAttributeCount = 0
+    negAttributeCount = 0
+
+    for example in examples:
+        if (attribute + ':1') in example:
+            if example[0] == '+1':
+                posLabelCount += 1
+            posAttributeCount += 1
+        else:
+            if example[0] == '+1':
+                negLabelCount += 1 # misnomer
+            negAttributeCount += 1
+
+    pos = posLabelCount
+    neg = posAttributeCount - posLabelCount
+    tot = posAttributeCount
+    posEntropy = 0
+    if (pos != 0 and neg != 0):
+        posEntropy = (-(pos/tot)*log2(pos/tot)) - ((neg/tot)*log2(neg/tot))
+    pos = negLabelCount
+    neg = negAttributeCount - negLabelCount
+    tot = negAttributeCount
+    negEntropy = 0
+    if (pos != 0 and neg != 0):
+        negEntropy = (-(pos/tot)*log2(pos/tot)) - ((neg/tot)*log2(neg/tot))
+
+    return ((posLabelCount / len(examples))*(posEntropy) + (negLabelCount / len(examples))*(negEntropy))
+
+def find_highest_info_gain(examples, attributes):
     pos = 0
     neg = 0
-    tot = len(labels)
+    tot = len(examples)
 
-    for label in labels:
-        if int(label) > 0:
+    for example in examples:
+        if example[0] == '+1':
             pos += 1
         else:
             neg += 1
-    currentEntropy = -(pos/tot)*log2(pos/tot) - (neg/tot)*log2(neg/tot)
+    currentEntropy = (-(pos/tot)*log2(pos/tot)) - ((neg/tot)*log2(neg/tot))
 
-    foundIndexes = []
     highestInfoGain = 0
-    
-    for aList in attributes:
-        if (len(aList) > 0):
-            bestAttribute = aList[0].split(':').pop(0)
+    bestAttribute = attributes[0]
 
-    for aList in attributes:
-        for attribute in aList:
-            aIndex = attribute.split(':').pop(0)
-            aValue = attribute.split(':').pop(1)
-            if aIndex not in foundIndexes:
-                foundIndexes.append(aIndex)
-                pos = get_positive_attribute_count(attributes, attribute)
-                neg = tot - pos
-                if pos == 0 or neg == 0:
-                    aEntropy = 0
-                else:
-                    aEntropy = -(pos/tot)*log2(pos/tot) - (neg/tot)*log2(neg/tot)
-                aInfoGain = currentEntropy - aEntropy
-                if aInfoGain > highestInfoGain:
-                    highestInfoGain = aInfoGain
-                    bestAttribute = aIndex
-                    
+    for attribute in attributes:
+        aEntropy = get_attribute_entropy(examples, attribute)
+        aInfoGain = currentEntropy - aEntropy
+        if aInfoGain > highestInfoGain:
+            highestInfoGain = aInfoGain
+            bestAttribute = attribute
+
     return bestAttribute
 
-# dios mio!
-def fill_attribute_examples(labels, attributes, bestAttribute, posLabels, posAttributes, negLabels, negAttributes):
-    for i in range(len(attributes)):
-        if bestAttribute in attributes[i]:
-            posLabels.append(labels[i])
-            posAttributes.append(attributes[i])
-        else:
-            negLabels.append(labels[i])
-            negAttributes.append(attributes[i])
+# extension of the bs
+def get_attribute_values(attribute):
+    return ['0', '1']
 
-def remove_attribute(attributes, a):
-    for aList in attributes:
-        aList.remove(a)
-    return attributes
+def get_examples_with_attribute_value(examples, attributeValue):
+    value = attributeValue.split(':').pop(1)
+    subset = []
+    if value == '0':
+        attributeValue = attributeValue.split(':').pop(0) + ':1'
+        for example in examples:
+            if attributeValue not in example:
+                subset.append(example)
+    else:
+        for example in examples:
+            if attributeValue in example:
+                subset.append(example)
+    return subset
 
-def get_common_label(labels):
+def get_common_label(examples):
     pos = 0
-    neg = 0
-    for label in labels:
-        if label == 1:
+    for example in examples:
+        if example[0] == int(1):
             pos += 1
-        else:
-            neg += 1
-    if pos > neg:
+    if pos > (len(examples) - pos):
         return 1
     else:
         return 0
 
-def ID3(labels, attributes):
+
+def ID3(examples, attributes):
     # if all examples have the same label -> return node tree w/ that label
     lFlag = True
-    l = labels[0]
-    for label in labels:
-        if label != l:
+    l = examples[0][0]
+    for example in examples:
+        if l != example[0]:
             lFlag = False
             break
     if lFlag:
-        return Node(l)
+        return Node(int(l))
 
     # create root node
     # ...
 
-    # get attribute that best classifies the set of examples
-    bestAttribute = find_highest_info_gain(labels, attributes)
+    if len(attributes) < 1:
+        return Node(get_common_label(examples))
+
+    bestAttribute = find_highest_info_gain(examples, attributes)
 
     # create root node now?
     root = Node(bestAttribute)
 
-    posLabels = []
-    posAttributes = []
-    negLabels = []
-    negAttributes = []
-    fill_attribute_examples(labels, attributes, bestAttribute + ':1', posLabels, posAttributes, negLabels, negAttributes)
-
-    if len(posAttributes) == 0:
-        # insert right(1) leaf node w/ end value 0 or 1 
-        root.insert(1, Node(get_common_label(posLabels)))
-    else:
-        posAttributes = remove_attribute(posAttributes, bestAttribute + ':1')
-        rNode = ID3(posLabels, posAttributes)
-        root.insert(1, rNode)
-
-    if len(negAttributes) == 0:
-        # insert left(0) leaf node w/ end value 0 or 1
-        root.insert(0, Node(get_common_label(negLabels)))
-    else:
-        lNode = ID3(negLabels, negAttributes)
-        root.insert(0, lNode)
+    attributesSubset = attributes
+    attributesSubset.remove(bestAttribute)
+    # half-assed attempt to include non-binary functionality
+    for value in get_attribute_values(bestAttribute):
+        #root.add_branch(value)
+        attributeValue = bestAttribute + ':' + value
+        examplesSubset = get_examples_with_attribute_value(examples, attributeValue)
+        if len(examplesSubset) == 0:
+            child = Node(get_common_label(examplesSubset))
+        else:
+            child = Node(ID3(examplesSubset, attributesSubset))
+        root.add_child(value, child)
 
     return root
 
 
+def test_tree(root, example):
+    while len(root.children) > 0:
+        if (root.value + ':1') in example:
+            root = root.children['1']
+        else:
+            root = root.children['0']
+    return root.value
+
 # *something to keep in mind: only leaf nodes will hold label values (1 or 0), unless referring to index 1 or 0...*
 
 # Main program
-attributes = read_file() # slight misnomer, since labels are still present...
-labels = separate_labels_from_features(attributes) # ah, that's better
+examples = read_file()
+attributes = get_measured_attributes(examples)
 
-root = ID3(labels, attributes)
+root = ID3(examples, attributes)
 
-root.print_tree()
+# test tree on training set (previous examples)
+count = 0
+correct = 0
+for example in examples:
+    label = example.pop(0) # remove label and store for validation
+    result = test_tree(root, example)
+    if result == label:
+        correct += 1
+    count += 1 
 
-#print(str(labels[1]) + " --- " + str(attributes[1]))
+print('Total: ' + str(count) + '\tCorrect: ' + str(correct) + '\tAccuracy: ' + str(correct / count))
 
+# root.print_tree()
