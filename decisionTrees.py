@@ -1,4 +1,6 @@
+from os import listdir
 from math import log2
+from math import sqrt
 from node import Node
 
 def read_file(path):
@@ -104,7 +106,7 @@ def get_examples_with_attribute_value(examples, attributeValue):
                 subset.append(example)
     return subset
 
-def ID3(examples, attributes):
+def ID3(examples, attributes ):
     # if all examples have the same label -> return node tree w/ that label
     lFlag = True
     l = examples[0][0]
@@ -137,6 +139,41 @@ def ID3(examples, attributes):
 
     return root
 
+def ID3_with_depth_restriction(examples, attributes, currentDepth, maxDepth):
+    # if all examples have the same label -> return node tree w/ that label
+    lFlag = True
+    l = examples[0][0]
+    for example in examples:
+        if l != example[0]:
+            lFlag = False
+            break
+    if lFlag:
+        return Node(l)
+
+    # get most common label if no attributes left or we've reach the max depth for the tree
+    if len(attributes) < 1 or currentDepth == maxDepth:
+        return Node(get_common_label(examples))
+
+    # alright then, we're recursing
+    bestAttribute = find_highest_info_gain(examples, attributes)
+    root = Node(bestAttribute)
+
+    attributesSubset = attributes
+    attributesSubset.remove(bestAttribute)
+    # half-assed attempt to include non-binary functionality
+    for value in get_attribute_values(bestAttribute):
+        attributeValue = bestAttribute + ':' + value
+        examplesSubset = get_examples_with_attribute_value(
+            examples, attributeValue)
+        if len(examplesSubset) == 0:
+            root.add_child(value, Node(get_common_label(examplesSubset)))
+        else:
+            currentDepth += 1
+            root.add_child(value, ID3_with_depth_restriction(examplesSubset, attributesSubset, currentDepth, maxDepth))
+            currentDepth -= 1 # reset current depth for next child node
+
+    return root
+
 def test_tree(root, example):
     while len(root.children) > 0:
         if (root.value + ':1') in example:
@@ -154,7 +191,7 @@ root = ID3(examples, attributes)
 count = 0
 correct = 0
 for example in examples:
-    label = example.pop(0)  # remove label and store for validation
+    label = example[0]  # store for validation
     result = test_tree(root, example)
     if result == label:
         correct += 1
@@ -169,13 +206,61 @@ tests = read_file('data/a1a.test')
 count = 0
 correct = 0
 for test in tests:
-    label = test.pop(0)  # remove label and store for validation
+    label = test[0]
     result = test_tree(root, test)
     if result == label:
         correct += 1
     count += 1
 
 print('Testing Data: Total: ' + str(count) + '\tCorrect: ' +
-    str(correct) + '\tAccuracy: ' + str(correct / count))
+    str(correct) + '\tAccuracy: ' + str(correct / count) + '\n')
 
 # limiting depth w/ 5-fold cross-validation
+dir = 'data/CVfolds/'
+folds = {}
+count = 0
+for fileName in listdir(dir):
+    foldData = read_file(dir + fileName)
+    folds[count] = foldData
+    count += 1
+
+for k in range(41):
+    acccuracies = []
+    for i in range(len(folds)):
+        # split data into training set and test set
+        testFold = folds[i]
+        trainingFolds = []
+        for j in range(len(folds)):
+            if j != i:
+                trainingFolds = trainingFolds + folds[j]
+
+        # build depth-restricted tree (k-max) from training set
+        attributes = get_measured_attributes(trainingFolds)
+        root = ID3_with_depth_restriction(trainingFolds, attributes, 0, k)
+
+        # test tree against withheld set
+        count = 0
+        correct = 0
+        for test in testFold:
+            label = test[0]
+            result = test_tree(root, test)
+            if result == label:
+                correct += 1
+            count += 1
+
+        acccuracies.append(correct / count)
+    # mean
+    mean = sum(acccuracies) / len(acccuracies)
+    # variance
+    variance = 0
+    for accuracy in acccuracies:
+        variance += ((accuracy - mean)**2)
+    variance = variance / len(acccuracies)
+    # standard deviation
+    standardDeviation = sqrt(variance)
+
+    print('Depth: ' + str(k) + '\tMean: ' + str(mean) + '\tStandard Dev: ' + str(standardDeviation))
+
+
+# print('Fold Data ' + str(k) + ': Total: ' + str(count) + '\tCorrect: ' +
+#             str(correct) + '\tAccuracy: ' + str(correct / count))
