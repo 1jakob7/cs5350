@@ -23,6 +23,18 @@ def get_measured_attributes(examples):
                     found_attributes.append(value.split(':').pop(0))
     return found_attributes
 
+def get_overall_entropy(examples):
+    pos = 0
+    neg = 0
+    tot = len(examples)
+
+    for example in examples:
+        if example[0] == '+1':
+            pos += 1
+        else:
+            neg += 1
+    return (-(pos/tot)*log2(pos/tot)) - ((neg/tot)*log2(neg/tot))
+
 def get_attribute_entropy(examples, attribute):
     posLabelCount = 0
     negLabelCount = 0
@@ -54,19 +66,8 @@ def get_attribute_entropy(examples, attribute):
 
     return ((posLabelCount / len(examples))*(posEntropy) + (negLabelCount / len(examples))*(negEntropy))
 
-
 def find_highest_info_gain(examples, attributes):
-    pos = 0
-    neg = 0
-    tot = len(examples)
-
-    for example in examples:
-        if example[0] == '+1':
-            pos += 1
-        else:
-            neg += 1
-    currentEntropy = (-(pos/tot)*log2(pos/tot)) - ((neg/tot)*log2(neg/tot))
-
+    currentEntropy = get_overall_entropy(examples)
     highestInfoGain = 0
     bestAttribute = attributes[0]
     for attribute in attributes:
@@ -174,6 +175,20 @@ def ID3_with_depth_restriction(examples, attributes, currentDepth, maxDepth):
 
     return root
 
+def print_highest_info_gain(examples, attributes):
+    currentEntropy = get_overall_entropy(examples)
+    highestInfoGain = 0
+    bestAttribute = attributes[0]
+    for attribute in attributes:
+        aEntropy = get_attribute_entropy(examples, attribute)
+        aInfoGain = currentEntropy - aEntropy
+        if aInfoGain > highestInfoGain:
+            highestInfoGain = aInfoGain
+            bestAttribute = attribute
+
+    print('Best Feature in Training Set: ' + str(bestAttribute) 
+        + '\tInformation Gain: ' + str(highestInfoGain) + '\n')
+
 def test_tree(root, example):
     while len(root.children) > 0:
         if (root.value + ':1') in example:
@@ -186,6 +201,9 @@ def test_tree(root, example):
 # setup and training data
 examples = read_file('data/a1a.train')
 attributes = get_measured_attributes(examples)
+print('Most Common Label in Training Data: ' + get_common_label(examples) + '\n') ### PRINTa ###
+print('Entropy of Training Data: ' + str(get_overall_entropy(examples)) + '\n') ### PRINTb ###
+print_highest_info_gain(examples, attributes) ### PRINTc ###
 root = ID3(examples, attributes)
 
 count = 0
@@ -197,8 +215,7 @@ for example in examples:
         correct += 1
     count += 1
 
-print('Training Data: Total: ' + str(count) + '\tCorrect: ' +
-      str(correct) + '\tAccuracy: ' + str(correct / count))
+print('Training Set Accuracy: ' + str(correct / count) + '\n') ### PRINTd ###
 
 # test data
 tests = read_file('data/a1a.test')
@@ -212,8 +229,7 @@ for test in tests:
         correct += 1
     count += 1
 
-print('Testing Data: Total: ' + str(count) + '\tCorrect: ' +
-    str(correct) + '\tAccuracy: ' + str(correct / count) + '\n')
+print('Test Set Accuracy: ' + str(correct / count) + '\n') ### PRINTe ###
 
 # limiting depth w/ 5-fold cross-validation
 dir = 'data/CVfolds/'
@@ -224,7 +240,10 @@ for fileName in listdir(dir):
     folds[count] = foldData
     count += 1
 
-for k in range(41):
+bestDepth = 0
+greatestAccuracy = 0
+
+for k in range(21):
     acccuracies = []
     for i in range(len(folds)):
         # split data into training set and test set
@@ -258,9 +277,39 @@ for k in range(41):
     variance = variance / len(acccuracies)
     # standard deviation
     standardDeviation = sqrt(variance)
+    print('Depth: ' + str(k) + '\tAverage Accuracy: ' + str(mean) + 
+        '\tStandard Deviation: ' + str(standardDeviation)) ### PRINTf ###
 
-    print('Depth: ' + str(k) + '\tMean: ' + str(mean) + '\tStandard Dev: ' + str(standardDeviation))
+    if (mean > greatestAccuracy):
+        greatestAccuracy = mean
+        bestDepth = k
+print('\nBest Depth: ' + str(bestDepth) + '\n') ### PRINTg ###
 
+# retry original data w/ optimal depth
+attributes = get_measured_attributes(examples)
+root = ID3_with_depth_restriction(examples, attributes, 0, bestDepth)
 
-# print('Fold Data ' + str(k) + ': Total: ' + str(count) + '\tCorrect: ' +
-#             str(correct) + '\tAccuracy: ' + str(correct / count))
+count = 0
+correct = 0
+for example in examples:
+    label = example[0]  # store for validation
+    result = test_tree(root, example)
+    if result == label:
+        correct += 1
+    count += 1
+
+#print('Training Set Accuracy w/ Best Depth: ' + str(correct / count) + '\n')
+
+# test data
+tests = read_file('data/a1a.test')
+
+count = 0
+correct = 0
+for test in tests:
+    label = test[0]
+    result = test_tree(root, test)
+    if result == label:
+        correct += 1
+    count += 1
+
+print('Test Set Accuracy w/ Best Depth: ' + str(correct / count) + '\n') ### PRINTh ###
