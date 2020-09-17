@@ -1,10 +1,10 @@
 from math import log2
 from node import Node
 
-def read_file():
+def read_file(path):
     data = []
     # open file for reading, "with" handles automatically closing the file
-    with open('data/a1a.train', 'r') as file:
+    with open(path, 'r') as file:
         for line in file:
             example = line.split()
             # store label (i.e. -1 or 1) along w/ associated feature vector as an array (<label>, <index>:<value>, ...)
@@ -21,8 +21,6 @@ def get_measured_attributes(examples):
                     found_attributes.append(value.split(':').pop(0))
     return found_attributes
 
-#####
-
 def get_attribute_entropy(examples, attribute):
     posLabelCount = 0
     negLabelCount = 0
@@ -36,7 +34,7 @@ def get_attribute_entropy(examples, attribute):
             posAttributeCount += 1
         else:
             if example[0] == '+1':
-                negLabelCount += 1 # misnomer
+                negLabelCount += 1  # misnomer
             negAttributeCount += 1
 
     pos = posLabelCount
@@ -54,6 +52,7 @@ def get_attribute_entropy(examples, attribute):
 
     return ((posLabelCount / len(examples))*(posEntropy) + (negLabelCount / len(examples))*(negEntropy))
 
+
 def find_highest_info_gain(examples, attributes):
     pos = 0
     neg = 0
@@ -68,7 +67,6 @@ def find_highest_info_gain(examples, attributes):
 
     highestInfoGain = 0
     bestAttribute = attributes[0]
-
     for attribute in attributes:
         aEntropy = get_attribute_entropy(examples, attribute)
         aInfoGain = currentEntropy - aEntropy
@@ -81,6 +79,16 @@ def find_highest_info_gain(examples, attributes):
 # extension of the bs
 def get_attribute_values(attribute):
     return ['0', '1']
+
+def get_common_label(examples):
+    pos = 0
+    for example in examples:
+        if example[0] == int(1):
+            pos += 1
+    if pos > (len(examples) - pos):
+        return '+1'
+    else:
+        return '-1'
 
 def get_examples_with_attribute_value(examples, attributeValue):
     value = attributeValue.split(':').pop(1)
@@ -96,17 +104,6 @@ def get_examples_with_attribute_value(examples, attributeValue):
                 subset.append(example)
     return subset
 
-def get_common_label(examples):
-    pos = 0
-    for example in examples:
-        if example[0] == int(1):
-            pos += 1
-    if pos > (len(examples) - pos):
-        return 1
-    else:
-        return 0
-
-
 def ID3(examples, attributes):
     # if all examples have the same label -> return node tree w/ that label
     lFlag = True
@@ -116,34 +113,29 @@ def ID3(examples, attributes):
             lFlag = False
             break
     if lFlag:
-        return Node(int(l))
+        return Node(l)
 
-    # create root node
-    # ...
-
+    # get most common label if no attributes left
     if len(attributes) < 1:
         return Node(get_common_label(examples))
 
+    # alright then, we're recursing
     bestAttribute = find_highest_info_gain(examples, attributes)
-
-    # create root node now?
     root = Node(bestAttribute)
 
     attributesSubset = attributes
     attributesSubset.remove(bestAttribute)
     # half-assed attempt to include non-binary functionality
     for value in get_attribute_values(bestAttribute):
-        #root.add_branch(value)
         attributeValue = bestAttribute + ':' + value
-        examplesSubset = get_examples_with_attribute_value(examples, attributeValue)
+        examplesSubset = get_examples_with_attribute_value(
+            examples, attributeValue)
         if len(examplesSubset) == 0:
-            child = Node(get_common_label(examplesSubset))
+            root.add_child(value, Node(get_common_label(examplesSubset)))
         else:
-            child = Node(ID3(examplesSubset, attributesSubset))
-        root.add_child(value, child)
+            root.add_child(value, ID3(examplesSubset, attributesSubset))
 
     return root
-
 
 def test_tree(root, example):
     while len(root.children) > 0:
@@ -153,24 +145,37 @@ def test_tree(root, example):
             root = root.children['0']
     return root.value
 
-# *something to keep in mind: only leaf nodes will hold label values (1 or 0), unless referring to index 1 or 0...*
-
 # Main program
-examples = read_file()
+# setup and training data
+examples = read_file('data/a1a.train')
 attributes = get_measured_attributes(examples)
-
 root = ID3(examples, attributes)
 
-# test tree on training set (previous examples)
 count = 0
 correct = 0
 for example in examples:
-    label = example.pop(0) # remove label and store for validation
+    label = example.pop(0)  # remove label and store for validation
     result = test_tree(root, example)
     if result == label:
         correct += 1
-    count += 1 
+    count += 1
 
-print('Total: ' + str(count) + '\tCorrect: ' + str(correct) + '\tAccuracy: ' + str(correct / count))
+print('Training Data: Total: ' + str(count) + '\tCorrect: ' +
+      str(correct) + '\tAccuracy: ' + str(correct / count))
 
-# root.print_tree()
+# test data
+tests = read_file('data/a1a.test')
+
+count = 0
+correct = 0
+for test in tests:
+    label = test.pop(0)  # remove label and store for validation
+    result = test_tree(root, test)
+    if result == label:
+        correct += 1
+    count += 1
+
+print('Testing Data: Total: ' + str(count) + '\tCorrect: ' +
+    str(correct) + '\tAccuracy: ' + str(correct / count))
+
+# limiting depth w/ 5-fold cross-validation
