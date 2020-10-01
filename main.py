@@ -44,6 +44,21 @@ def getBestWeight(accuracies):
 
     return bestWeight
 
+def getMajorityBaselineAccuracy(data):
+    posCount = 0
+    negCount = 0
+    correctCount = 0
+    for example in data:
+        guess = 1 if posCount > negCount else -1
+        if guess == int(example[0]):
+            correctCount += 1
+        if example[0] == -1:
+            negCount += 1
+        else:
+            posCount += 1
+    
+    return correctCount / len(data)
+
 # *program starts here*
 # set some program constants
 random.seed(17)
@@ -63,27 +78,9 @@ fixedTestData = []
 for example in testData:
     fixedTestData.append(createVector(example, attributeCount))
 
-# train Simple Perceptron and then test using most accurate weight vector
-for rate in learningRates:
-    accuracies = perceptrons.simplePerceptron(
-        fixedTrainData, trainEpochCount, rate)
-    bestWeight = getBestWeight(accuracies)
-    testResult = perceptrons.recordAccuracy(fixedTestData, bestWeight)
-    #print(str(rate) + ' : ' +
-    #      str(perceptrons.recordAccuracy(fixedTestData, bestWeight)))
-
-# train Decaying Perceptron and then test using most accurate weight vector
-for rate in learningRates:
-    accuracies = perceptrons.decayingPerceptron(
-        fixedTrainData, trainEpochCount, rate)
-    bestWeight = getBestWeight(accuracies)
-    testResult = perceptrons.recordAccuracy(fixedTestData, bestWeight)
-
-# train Averaged Perceptron and then test using averaged weight vector
-for rate in learningRates:
-    averagedWeightAndBias = perceptrons.averagedPerceptron(
-        fixedTrainData, trainEpochCount, rate)
-    testResult = perceptrons.recordAccuracy(fixedTestData, averagedWeightAndBias[0])
+# generate majority baselines
+print('Training set accuracy for Majority Baseline: ' + str(getMajorityBaselineAccuracy(trainData)))
+print('Test set accuracy for Majority Baseline: ' + str(getMajorityBaselineAccuracy(testData)) + '\n')
 
 # k-fold using all perceptron algorithms
 foldsEpochCount = 10
@@ -123,18 +120,18 @@ for rate in learningRates:
         # train Simple Perceptron and test
         accuracies = perceptrons.simplePerceptron(
             fixedTrainFolds, foldsEpochCount, rate)
-        bestWeight = getBestWeight(accuracies)
+        bestWeight = getBestWeight(accuracies[0])
         simpleAccuracySum += perceptrons.recordAccuracy(fixedTestFold, bestWeight)
         # train Decaying Perceptron and test
         accuracies = perceptrons.decayingPerceptron(
             fixedTrainFolds, foldsEpochCount, rate)
-        bestWeight = getBestWeight(accuracies)
+        bestWeight = getBestWeight(accuracies[0])
         decayAccuracySum += perceptrons.recordAccuracy(fixedTestFold, bestWeight)
         # train Averaged Perceptron and test
-        averagedWeightAndBias = perceptrons.averagedPerceptron(
+        averagedWeight = perceptrons.averagedPerceptron(
             fixedTrainFolds, foldsEpochCount, rate)
         averagedAccuracySum += perceptrons.recordAccuracy(
-            fixedTestFold, averagedWeightAndBias[0])
+            fixedTestFold, averagedWeight[0])
     simpleMeanAccuracies.append(simpleAccuracySum / numFolds)
     decayMeanAccuracies.append(decayAccuracySum / numFolds)
     averagedMeanAccuracies.append(averagedAccuracySum / numFolds)
@@ -148,6 +145,7 @@ for i in range(len(simpleMeanAccuracies)):
 print('Best hyper-parameter (learning rate) for Simple Perceptron: ' 
     + str(learningRates[bestIndex]))
 print('Corresponding cross-validation accuracy: ' + str(bestAccuracy) + '\n')
+simpleLearningRate = learningRates[bestIndex] #
 bestIndex = 0
 bestAccuracy = 0
 for i in range(len(decayMeanAccuracies)):
@@ -157,6 +155,7 @@ for i in range(len(decayMeanAccuracies)):
 print('Best hyper-parameter (learning rate) for Decaying Perceptron: ' 
     + str(learningRates[bestIndex]))
 print('Corresponding cross-validation accuracy: ' + str(bestAccuracy) + '\n')
+decayLearningRate = learningRates[bestIndex] #
 bestIndex = 0
 bestAccuracy = 0
 for i in range(len(averagedMeanAccuracies)):
@@ -166,3 +165,36 @@ for i in range(len(averagedMeanAccuracies)):
 print('Best hyper-parameter (learning rate) for Averaged Perceptron: ' 
     + str(learningRates[bestIndex]))
 print('Corresponding cross-validation accuracy: ' + str(bestAccuracy) + '\n')
+averagedLearningRate = learningRates[bestIndex] #
+
+# train Simple Perceptron and then test using most accurate weight vector
+accuracies = perceptrons.simplePerceptron(
+    fixedTrainData, trainEpochCount, simpleLearningRate)
+bestWeight = getBestWeight(accuracies[0])
+trainResult = perceptrons.recordAccuracy(fixedTrainData, bestWeight)
+testResult = perceptrons.recordAccuracy(fixedTestData, bestWeight)
+print('Simple Perceptron using best determined learning rate: ' + str(simpleLearningRate) + ' ...')
+print('Updates performed: ' + str(accuracies[1]))
+print('Training set accuracy: ' + str(trainResult))
+print('Test set accuracy: ' + str(testResult) + '\n')
+
+# train Decaying Perceptron and then test using most accurate weight vector
+accuracies = perceptrons.decayingPerceptron(
+    fixedTrainData, trainEpochCount, decayLearningRate)
+bestWeight = getBestWeight(accuracies[0])
+trainResult = perceptrons.recordAccuracy(fixedTrainData, bestWeight)
+testResult = perceptrons.recordAccuracy(fixedTestData, bestWeight)
+print('Decaying Perceptron using best determined learning rate: ' + str(decayLearningRate) + ' ...')
+print('Updates performed: ' + str(accuracies[1]))
+print('Training set accuracy: ' + str(trainResult))
+print('Test set accuracy: ' + str(testResult) + '\n')
+
+# train Averaged Perceptron and then test using averaged weight vector
+averagedWeight = perceptrons.averagedPerceptron(
+    fixedTrainData, trainEpochCount, averagedLearningRate)
+trainResult = perceptrons.recordAccuracy(fixedTrainData, averagedWeight[0])
+testResult = perceptrons.recordAccuracy(fixedTestData, averagedWeight[0])
+print('Averaged Perceptron using best determined learning rate: ' + str(averagedLearningRate) + ' ...')
+print('Updates performed: ' + str(averagedWeight[1]))
+print('Training set accuracy: ' + str(trainResult))
+print('Test set accuracy: ' + str(testResult))

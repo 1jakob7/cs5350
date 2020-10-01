@@ -22,6 +22,7 @@ def simplePerceptron(data, epochCount, learningRate):
     rand = random.uniform(-0.01, 0.01)
     size = len(data[0])
     accuracies = []
+    updates = 0
     # initialize weight vector
     w = []
     for i in range(size - 1):
@@ -40,14 +41,16 @@ def simplePerceptron(data, epochCount, learningRate):
                 for j in range(len(w)):
                     w[j] = w[j] + adjustment[j]
                 b = b + (yi * learningRate)
+                updates += 1
         accuracies.append([recordAccuracy(data, w), w])
 
-    return accuracies
+    return [accuracies, updates]
 
 def decayingPerceptron(data, epochCount, learningRate):
     rand = random.uniform(-0.01, 0.01)
     size = len(data[0])
     accuracies = []
+    updates = 0
     # initialize decay rate
     decayRate = 0
     decayIncrease = random.uniform(-0.001, 0.001)
@@ -69,16 +72,18 @@ def decayingPerceptron(data, epochCount, learningRate):
                 for j in range(len(w)):
                     w[j] = w[j] + adjustment[j]
                 b = b + (yi * learningRate)
+                updates += 1
         accuracies.append([recordAccuracy(data, w), w])
         # increase decay and then apply to learning rate
         decayRate += abs(decayIncrease)
         learningRate = learningRate / (1 + decayRate)
 
-    return accuracies
+    return [accuracies, updates]
 
 def averagedPerceptron(data, epochCount, learningRate):
     rand = random.uniform(-0.01, 0.01)
     size = len(data[0])
+    updates = 0
     # initialize weight vector and average weight vector
     w = []
     a = []
@@ -100,9 +105,10 @@ def averagedPerceptron(data, epochCount, learningRate):
                 for j in range(len(w)):
                     w[j] = w[j] + adjustment[j]
                 b = b + (yi * learningRate)
+                updates += 1
             # update the average weight and average bias regardless
             for j in range(size - 1):
                 a[j] += w[j]
             ba += b
 
-    return [a, ba]
+    return [a, updates]
