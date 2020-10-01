@@ -1,4 +1,4 @@
-# Author: Jakob Horvath, u1092049
+### Author: Jakob Horvath, u1092049
 
 import random
 import perceptrons
@@ -61,7 +61,7 @@ def getMajorityBaselineAccuracy(data):
 
 # *program starts here*
 # set some program constants
-random.seed(17)
+random.seed(49)
 trainEpochCount = 20
 learningRates = [1, 0.1, 0.01]
 
