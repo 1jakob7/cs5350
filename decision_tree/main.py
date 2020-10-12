@@ -1,4 +1,4 @@
-import os
+from decisionTree import depthRestrictedID3
 
 def readFile(path):
     data = []
@@ -8,35 +8,52 @@ def readFile(path):
             data.append(example)
     return data
 
-def getAttributeRange(data):
-    highest = 0
-    current = None
+# narrows down to the 100 most frequent attributes - used
+def getTrimmedAttributes(data):
+    attributeCounts = {}
     for example in data:
-        for attribute in example:
-            current = int(attribute.split(':')[0])
-            if current > highest:
-                highest = current
-    return [*range(1, highest + 1)]
+        l = len(example)
+        for i in range(1, l):
+            att = example[i].split(':')[0]
+            if att in attributeCounts:
+                attributeCounts[att] += 1
+            else:
+                attributeCounts[att] = 1
+    sortedAttributeCounts = sorted(attributeCounts.items(), 
+        key = lambda x: x[1], reverse = True)
+    commonAttributes = []
+    for i in range(100):
+        commonAttributes.append(sortedAttributeCounts[i][0])
+    return commonAttributes
+
+def makePrediction(root, example):
+    while len(root.children) > 0:
+        if (root.value + ':1') in example:
+            root = root.children['1']
+        else:
+            root = root.children['0']
+
+    return root.value
 
 # Main
 # setup training data
 basePath = 'project_data/data/'
 trainData = readFile(basePath + 'bag-of-words/bow.train.libsvm')
-attributes = getAttributeRange(trainData)
+tAttributes = getTrimmedAttributes(trainData) # take top 100 attributes
 
 # 5-fold cross-validation to test hyper-parameter: depth
 foldCount = 5
 examplesPerFold = int(len(trainData) / foldCount)
-folds = []
+folds = {}
 for i in range(foldCount):
     fold = []
     for j in range(examplesPerFold):
         fold.append(trainData[j])
-    folds.append(fold)
+    folds[i] = fold
 
 bestDepth = 0
 greatestAccuracy = 0
-for k in range(10): # depth (1-10)
+for k in range(50): # depth (1-10)
     k += 1
     accuracies = []
     for i in range(foldCount):
@@ -46,15 +63,21 @@ for k in range(10): # depth (1-10)
         for j in range(foldCount):
             if j != i:
                 trainingFolds = trainingFolds + folds[j]
-        root = DepthRestrictedID3(trainingFolds, attributes, 0, k)
-
+        root = depthRestrictedID3(trainingFolds, tAttributes, 0, k)
         # test tree against withheld set
         count = 0
         correct = 0
         for example in testFold:
-            label = int(example[0])
+            label = example[0]
             result = makePrediction(root, example)
             if result == label:
                 correct += 1
             count += 1
         accuracies.append(correct / count)
+    mean = sum(accuracies) / len(accuracies)
+    if (mean > greatestAccuracy):
+        greatestAccuracy = mean
+        bestDepth = k
+    print('Run Accuracy: ' + str(mean) + ' w/ Depth: ' + str(k))
+
+print('\nBest Accuracy = ' + str(greatestAccuracy) + ' w/ Depth: ' + str(bestDepth))
