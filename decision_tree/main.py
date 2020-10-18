@@ -1,4 +1,5 @@
 from decisionTree import depthRestrictedID3
+import csv
 
 def readFile(path):
     data = []
@@ -8,8 +9,8 @@ def readFile(path):
             data.append(example)
     return data
 
-# narrows down to the 100 most frequent attributes - used
-def getTrimmedAttributes(data):
+# narrows down to the k-most frequent attributes
+def getTrimmedAttributes(data, k):
     attributeCounts = {}
     for example in data:
         l = len(example)
@@ -22,7 +23,7 @@ def getTrimmedAttributes(data):
     sortedAttributeCounts = sorted(attributeCounts.items(), 
         key = lambda x: x[1], reverse = True)
     commonAttributes = []
-    for i in range(100):
+    for i in range(k):
         commonAttributes.append(sortedAttributeCounts[i][0])
     return commonAttributes
 
@@ -37,9 +38,36 @@ def makePrediction(root, example):
 
 # Main
 # setup training data
-basePath = 'project_data/data/'
-trainData = readFile(basePath + 'bag-of-words/bow.train.libsvm')
-tAttributes = getTrimmedAttributes(trainData) # take top 100 attributes
+basePath = 'project_data/data/bag-of-words/'
+trainData = readFile(basePath + 'bow.train.libsvm')
+tAttributes = getTrimmedAttributes(trainData, 250) # take top 250 attributes
+
+maxDepth = 68
+root = depthRestrictedID3(trainData, tAttributes, 0, maxDepth) # max-depth of 68 - found to be best
+
+# setup test data
+# testData = readFile(basePath + 'bow.test.libsvm')
+# # test accuracy
+# count = 0
+# correct = 0
+# for example in testData:
+#             label = example[0]
+#             result = makePrediction(root, example)
+#             if result == label:
+#                 correct += 1
+#             count += 1
+# print('Test Run Accuracy: ' + str(correct / count) + ' w/ Depth: ' + str(maxDepth) + '\n')
+
+# setup eval data
+evalData = readFile(basePath + 'bow.eval.anon.libsvm')
+# store eval predictions in .csv file
+with open('decision_tree_predictions.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['example_id', 'label'])
+    for i in range(len(evalData)):
+        result = makePrediction(root, evalData[i])
+        writer.writerow([str(i), result])
+
 
 # 5-fold cross-validation to test hyper-parameter: depth
 foldCount = 5
@@ -47,14 +75,16 @@ examplesPerFold = int(len(trainData) / foldCount)
 folds = {}
 for i in range(foldCount):
     fold = []
-    for j in range(examplesPerFold):
+    startIndex = i * examplesPerFold
+    endIndex = startIndex + examplesPerFold
+    for j in range(startIndex, endIndex):
         fold.append(trainData[j])
     folds[i] = fold
 
 bestDepth = 0
 greatestAccuracy = 0
-for k in range(50): # depth (1-10)
-    k += 1
+for k in range(1): # depth (70-100)
+    k += 87
     accuracies = []
     for i in range(foldCount):
         # split data into training set and test set
