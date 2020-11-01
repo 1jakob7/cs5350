@@ -19,7 +19,7 @@ def averagedPerceptron(data, epochCount, learningRate):
     for i in range(epochCount):
         random.shuffle(data)
         for example in data:
-            yi = int(example[0]) # label
+            yi = float(example[0]) # label
             xi = example[1:size] # attributes
             # update the weight and bias if there was an error
             if (yi * (np.dot(w, xi) + b)) <= 0:

@@ -11,6 +11,13 @@ def readFile(path):
             data.append(example)
     return data
 
+def removeAttributeIndexes(data, size):
+    for example in data:
+        for i in range(len(example)):
+            if i > 0:
+                sp = example[i].split(':')
+                example[i] = float(sp[1])
+
 def recordAccuracy(data, w):
     size = len(data[0])
     correctCount = 0
@@ -31,9 +38,10 @@ epochCount = 10
 learningRates = [1, 0.1, 0.01]
 
 # setup training data
-basePath = 'project_data/data/bag-of-words/'
-trainData = readFile(basePath + 'glove.train.libsvm')
 attributeCount = 300 # sue me
+basePath = 'project_data/data/glove/'
+trainData = readFile(basePath + 'glove.train.libsvm')
+removeAttributeIndexes(trainData, attributeCount)
 
 # 5-fold cross-validation to test hyper-parameter: learningRate
 foldCount = 5
@@ -70,4 +78,6 @@ for rate in learningRates:
     avgUpdates.append(updatesSum / foldCount)
 
 # print results...
-
+for i in range(len(avgAccuracies)):
+    print('Learning rate: ' + str(learningRates[i]) + '\tAverage accuracy: '
+    + str(avgAccuracies[i]) + '\tAverage updates: ' + str(avgUpdates[i]))
