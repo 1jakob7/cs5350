@@ -1,0 +1,39 @@
+glove:
+With an epoch count of 2...
+Learning rate: 1        Average accuracy: 0.6311428571428571    Average updates: 12117.4
+Learning rate: 0.1      Average accuracy: 0.6275428571428572    Average updates: 12132.8
+Learning rate: 0.01     Average accuracy: 0.6297714285714286    Average updates: 12023.2
+Learning rate: 0.001    Average accuracy: 0.6300571428571429    Average updates: 12104.4
+
+With an epoch count of 5...
+Learning rate: 1        Average accuracy: 0.632057142857143     Average updates: 29734.4
+Learning rate: 0.1      Average accuracy: 0.6282285714285714    Average updates: 29714.8
+Learning rate: 0.01     Average accuracy: 0.6310857142857144    Average updates: 29689.8
+Learning rate: 0.001    Average accuracy: 0.6305714285714286    Average updates: 29724.2
+
+With an epoch count of 10...
+Learning rate: 1        Average accuracy: 0.6297142857142857    Average updates: 58993.6
+Learning rate: 0.1      Average accuracy: 0.6292                Average updates: 58900.6
+Learning rate: 0.01     Average accuracy: 0.6288571428571429    Average updates: 58871.2
+Learning rate: 0.001    Average accuracy: 0.6289714285714285    Average updates: 58848.8
+
+
+tfidf:
+With an epoch count of 2...
+Learning rate: 1        Average accuracy: 0.6997142857142857    Average updates: 9137.4
+Learning rate: 0.1      Average accuracy: 0.7037142857142857    Average updates: 9180.6
+Learning rate: 0.01     Average accuracy: 0.5902857142857142    Average updates: 9281.0
+Learning rate: 0.001    Average accuracy: 0.505942857142857     Average updates: 10453.0
+
+With an epoch count of 5...
+Learning rate: 1        Average accuracy: 0.704                 Average updates: 19127.8
+Learning rate: 0.1      Average accuracy: 0.6976571428571428    Average updates: 19082.8
+Learning rate: 0.01     Average accuracy: 0.6528571428571428    Average updates: 19142.8
+Learning rate: 0.001    Average accuracy: 0.5829714285714286    Average updates: 21087.6
+
+With an epoch count of 7...
+Learning rate: 1        Average accuracy: 0.6972571428571428    Average updates: 24889.0
+Learning rate: 0.1      Average accuracy: 0.6958285714285715    Average updates: 24802.4
+
+With an epoch count of 10...
+Learning rate: 1        Average accuracy: 0.6961142857142857    Average updates: 32514.0
