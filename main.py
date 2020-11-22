@@ -31,6 +31,15 @@ def createVector(example, attributeCount):
     vector[-1] = 1.0 # store bias at last index
     return vector
 
+def recordAccuracy(data, weight):
+    total = len(data)
+    correctCount = 0
+    for example in data:
+        trueLabel = example[0]
+        if makePrediction(example, weight) == trueLabel:
+            correctCount += 1
+    return correctCount / total
+
 def makePrediction(example, weight):
     guess = np.dot(example[1:], weight)
     if guess < 0:
@@ -64,14 +73,21 @@ regTradeoffs = [1000, 100, 10, 1, 0.1, 0.01]
 # 5-fold cross-validation
 for tradeoff in regTradeoffs:
     for rate in initialLearningRates:
+        accuracySum = 0
         for k in range(numFolds):
             # assign test and training data
             testFold = folds[k]
-            trainingFolds = folds[:k] + folds[k+1:]
+            trainingFolds = []
+            for i in range(numFolds):
+                if i != k:
+                    trainingFolds += folds[i]
             # train svm
             weight = svm.stochGradDescent(
                 trainingFolds, rate, tradeoff)
-
+            accuracySum += recordAccuracy(testFold, weight)
+        print('tradeoff: ' + str(tradeoff) + '\trate: ' + str(rate) + 
+            '\taverage accuracy: ' + str(accuracySum / numFolds))
+    print()
 
 
 # setup logistic regression constants
