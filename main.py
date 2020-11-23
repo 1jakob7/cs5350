@@ -70,6 +70,10 @@ for fold in folds:
 initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001]
 regTradeoffs = [1000, 100, 10, 1, 0.1, 0.01]
 
+# setup logistic regression constants
+# initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
+# regTradeoffs = [1000, 100, 10, 1, 0.1, 0.01]
+
 # 5-fold cross-validation
 for tradeoff in regTradeoffs:
     for rate in initialLearningRates:
@@ -88,6 +92,3 @@ for tradeoff in regTradeoffs:
         print('tradeoff: ' + str(tradeoff) + '\trate: ' + str(rate) + 
             '\taverage accuracy: ' + str(accuracySum / numFolds))
     print()
-
-
-# setup logistic regression constants
