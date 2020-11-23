@@ -23,7 +23,7 @@ def averagedPerceptron(data, epochCount, learningRate):
             xi = example[1:size] # attributes
             # update the weight and bias if there was an error
             if (yi * (np.dot(w, xi) + b)) <= 0:
-                adjustment = np.multiply(np.array(xi), (yi * learningRate)) #.tolist()
+                adjustment = np.multiply(np.array(xi), (yi * learningRate))
                 for j in range(len(w)):
                     w[j] = w[j] + adjustment[j]
                 b = b + (yi * learningRate)

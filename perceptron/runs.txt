@@ -37,3 +37,7 @@ Learning rate: 0.1      Average accuracy: 0.6958285714285715    Average updates:
 
 With an epoch count of 10...
 Learning rate: 1        Average accuracy: 0.6961142857142857    Average updates: 32514.0
+
+Epochs: 5, Learning rate: 1:
+Performed 24302 updates.
+Test accuracy: 0.6933333333333334

@@ -86,14 +86,14 @@ testAccuracy = recordAccuracy(testData, averagedResult[0])
 print('Test accuracy: ' + str(testAccuracy))
 
 # setup eval data and record predictions
-evalData = readFile(basePath + 'tfidf.eval.anon.libsvm')
-with open('avg_perceptron_predictions.csv', 'w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(['example_id', 'label'])
-    for i in range(len(evalData)):
-        evalData[i] = createVector(evalData[i], attributeCount)
-        result = makePrediction(evalData[i], averagedResult[0])
-        writer.writerow([str(i), result])
+# evalData = readFile(basePath + 'tfidf.eval.anon.libsvm')
+# with open('avg_perceptron_predictions.csv', 'w', newline='') as file:
+#     writer = csv.writer(file)
+#     writer.writerow(['example_id', 'label'])
+#     for i in range(len(evalData)):
+#         evalData[i] = createVector(evalData[i], attributeCount)
+#         result = makePrediction(evalData[i], averagedResult[0])
+#         writer.writerow([str(i), result])
 
 
 # # 5-fold cross-validation to test hyper-parameter: learningRate

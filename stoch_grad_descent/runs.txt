@@ -1,0 +1,196 @@
+TFIDF:
+
+Epoch count: 5 Tradeoff constant: 0.1
+Initial learning rate: 1        Average accuracy: 0.5309142857142857
+Initial learning rate: 0.01     Average accuracy: 0.6426857142857142
+Initial learning rate: 0.001    Average accuracy: 0.6744
+
+Epoch count: 5 Tradeoff constant: 0.01
+Initial learning rate: 1        Average accuracy: 0.5052
+Initial learning rate: 0.1      Average accuracy: 0.5747428571428572
+Initial learning rate: 0.01     Average accuracy: 0.6459999999999999
+Initial learning rate: 0.001    Average accuracy: 0.6762285714285714
+
+Epoch count: 5 Tradeoff constant: 0.001
+Initial learning rate: 1        Average accuracy: 0.5230285714285714
+Initial learning rate: 0.1      Average accuracy: 0.5659428571428572
+Initial learning rate: 0.01     Average accuracy: 0.66
+Initial learning rate: 0.001    Average accuracy: 0.6744571428571428
+
+--------------------------------------------------------------------
+
+Epoch count: 5 Tradeoff constant: 0.01
+Initial learning rate: 0.0001   Average accuracy: 0.6762285714285714
+Initial learning rate: 1e-05    Average accuracy: 0.6770285714285714
+
+Epoch count: 5 Tradeoff constant: 0.001
+Initial learning rate: 0.0001   Average accuracy: 0.6772
+Initial learning rate: 1e-05    Average accuracy: 0.6767428571428573
+
+--------------------------------------------------------------------
+
+Epoch count: 10 Tradeoff constant: 0.01
+Initial learning rate: 0.001    Average accuracy: 0.6778857142857142
+Initial learning rate: 0.0001   Average accuracy: 0.6764571428571429
+
+Epoch count: 10 Tradeoff constant: 0.001
+Initial learning rate: 0.001    Average accuracy: 0.6777142857142857
+Initial learning rate: 0.0001   Average accuracy: 0.6768
+
+--------------------------------------------------------------------
+
+* w/ no bias term
+Epoch count: 5 Tradeoff constant: 0.01
+Initial learning rate: 0.001    Average accuracy: 0.6762285714285714
+Initial learning rate: 0.0001   Average accuracy: 0.6776571428571427
+
+Epoch count: 5 Tradeoff constant: 0.001
+Initial learning rate: 0.001    Average accuracy: 0.6792571428571428
+Initial learning rate: 0.0001   Average accuracy: 0.6761714285714286
+
+--------------------------------------------------------------------
+
+Epoch count: 5 Tradeoff constant: 0.25
+Initial learning rate: 0.01     Average accuracy: 0.6602857142857144
+Initial learning rate: 0.001    Average accuracy: 0.6761142857142858
+Initial learning rate: 0.0001   Average accuracy: 0.6766857142857143
+
+--------------------------------------------------------------------
+(w/ rate = learningRate / (1 + (learningRate*epochCount)/tradeoff))
+
+Epoch count: 5 Tradeoff constant: 0.25
+Initial learning rate: 1        Average accuracy: 0.5564
+Initial learning rate: 0.1      Average accuracy: 0.5653142857142857
+Initial learning rate: 0.01     Average accuracy: 0.6097142857142857
+Initial learning rate: 0.001    Average accuracy: 0.6611428571428573
+Initial learning rate: 0.0001   Average accuracy: 0.6769714285714284
+
+Epoch count: 5 Tradeoff constant: 0.1
+Initial learning rate: 1        Average accuracy: 0.5770857142857142
+Initial learning rate: 0.1      Average accuracy: 0.5747428571428571
+Initial learning rate: 0.01     Average accuracy: 0.6094857142857143
+Initial learning rate: 0.001    Average accuracy: 0.6696571428571428
+Initial learning rate: 0.0001   Average accuracy: 0.6774285714285714
+
+Epoch count: 5 Tradeoff constant: 0.01
+Initial learning rate: 1        Average accuracy: 0.6355999999999999
+Initial learning rate: 0.1      Average accuracy: 0.6487428571428572
+Initial learning rate: 0.01     Average accuracy: 0.6608
+Initial learning rate: 0.001    Average accuracy: 0.6825714285714285
+Initial learning rate: 0.0001   Average accuracy: 0.6767428571428571
+
+Epoch count: 5 Tradeoff constant: 0.001
+Initial learning rate: 1        Average accuracy: 0.6807428571428573
+Initial learning rate: 0.1      Average accuracy: 0.6712571428571429
+Initial learning rate: 0.01     Average accuracy: 0.6782285714285715
+Initial learning rate: 0.001    Average accuracy: 0.6787428571428571
+Initial learning rate: 0.0001   Average accuracy: 0.6770285714285714
+
+--------------------------------------------------------------------
+
+Epoch count: 5 Tradeoff constant: 4
+Initial learning rate: 1        Average accuracy: 0.5198285714285714
+Initial learning rate: 0.1      Average accuracy: 0.5391428571428571
+Initial learning rate: 0.01     Average accuracy: 0.6034285714285714
+Initial learning rate: 0.001    Average accuracy: 0.6614857142857143
+Initial learning rate: 0.0001   Average accuracy: 0.6769714285714284
+
+Epoch count: 5 Tradeoff constant: 2
+Initial learning rate: 1        Average accuracy: 0.5223428571428572
+Initial learning rate: 0.1      Average accuracy: 0.5324000000000001
+Initial learning rate: 0.01     Average accuracy: 0.5979428571428571
+Initial learning rate: 0.001    Average accuracy: 0.6693142857142858
+Initial learning rate: 0.0001   Average accuracy: 0.6773714285714285
+
+Epoch count: 5 Tradeoff constant: 1
+Initial learning rate: 1        Average accuracy: 0.5317714285714286
+Initial learning rate: 0.1      Average accuracy: 0.5341142857142858
+Initial learning rate: 0.01     Average accuracy: 0.6183428571428571
+Initial learning rate: 0.001    Average accuracy: 0.6792
+Initial learning rate: 0.0001   Average accuracy: 0.6770285714285713
+
+Epoch count: 5 Tradeoff constant: 0.75
+Initial learning rate: 1        Average accuracy: 0.5484
+Initial learning rate: 0.1      Average accuracy: 0.5637714285714286
+Initial learning rate: 0.01     Average accuracy: 0.606057142857143
+Initial learning rate: 0.001    Average accuracy: 0.6738857142857142
+Initial learning rate: 0.0001   Average accuracy: 0.6748571428571427
+
+--------------------------------------------------------------------
+(w/ Bagging)
+
+Epoch count: 5 Tradeoff constant: 2
+Initial learning rate: 1        Average accuracy: 0.5145714285714286
+Initial learning rate: 0.1      Average accuracy: 0.5762285714285713
+Initial learning rate: 0.01     Average accuracy: 0.6586857142857143
+Initial learning rate: 0.001    Average accuracy: 0.6770857142857143
+
+Epoch count: 5 Tradeoff constant: 1.5
+Initial learning rate: 1        Average accuracy: 0.5512
+Initial learning rate: 0.1      Average accuracy: 0.5780571428571429
+Initial learning rate: 0.01     Average accuracy: 0.6550285714285715
+Initial learning rate: 0.001    Average accuracy: 0.6710857142857143
+
+Epoch count: 5 Tradeoff constant: 0.1
+Initial learning rate: 1        Average accuracy: 0.6325714285714286
+Initial learning rate: 0.1      Average accuracy: 0.6226285714285714
+Initial learning rate: 0.01     Average accuracy: 0.6669714285714287
+Initial learning rate: 0.001    Average accuracy: 0.6837142857142857
+
+Epoch count: 5 Tradeoff constant: 0.01
+Initial learning rate: 1        Average accuracy: 0.6690857142857142
+Initial learning rate: 0.1      Average accuracy: 0.6733142857142858
+Initial learning rate: 0.01     Average accuracy: 0.6829142857142856
+Initial learning rate: 0.001    Average accuracy: 0.6826857142857142
+
+--------------------------------------------------------------------
+
+Epoch count: 2 Tradeoff constant: 0.1
+Initial learning rate: 0.1      Average accuracy: 0.5985714285714285
+Initial learning rate: 0.01     Average accuracy: 0.6602857142857143
+Initial learning rate: 0.001    Average accuracy: 0.6696
+Initial learning rate: 0.0001   Average accuracy: 0.6719999999999999
+
+Epoch count: 2 Tradeoff constant: 0.01
+Initial learning rate: 0.1      Average accuracy: 0.6714285714285715
+Initial learning rate: 0.01     Average accuracy: 0.6722857142857143
+Initial learning rate: 0.001    Average accuracy: 0.6740571428571428
+Initial learning rate: 0.0001   Average accuracy: 0.6749714285714287
+
+Epoch count: 2 Tradeoff constant: 0.001
+Initial learning rate: 0.1      Average accuracy: 0.6849142857142858
+Initial learning rate: 0.01     Average accuracy: 0.6733714285714285
+Initial learning rate: 0.001    Average accuracy: 0.6676
+Initial learning rate: 0.0001   Average accuracy: 0.6725142857142857
+
+Epoch count: 2 Tradeoff constant: 0.0001
+Initial learning rate: 0.1      Average accuracy: 0.6816
+Initial learning rate: 0.01     Average accuracy: 0.6761142857142857
+Initial learning rate: 0.001    Average accuracy: 0.6749714285714286
+Initial learning rate: 0.0001   Average accuracy: 0.6729714285714287
+
+--------------------------------------------------------------------
+
+Epoch count: 3 Tradeoff constant: 0.01
+Initial learning rate: 0.01     Average accuracy: 0.6805714285714286
+Initial learning rate: 0.001    Average accuracy: 0.6721714285714285
+Initial learning rate: 0.0001   Average accuracy: 0.6793142857142856
+Initial learning rate: 1e-05    Average accuracy: 0.6747428571428571
+
+Epoch count: 3 Tradeoff constant: 0.001
+Initial learning rate: 0.01     Average accuracy: 0.6734285714285715
+Initial learning rate: 0.001    Average accuracy: 0.6717714285714287
+Initial learning rate: 0.0001   Average accuracy: 0.6749714285714286
+Initial learning rate: 1e-05    Average accuracy: 0.6815428571428571 ***
+
+Epoch count: 3 Tradeoff constant: 0.0001
+Initial learning rate: 0.01     Average accuracy: 0.6815428571428571 ***
+Initial learning rate: 0.001    Average accuracy: 0.6752571428571429
+Initial learning rate: 0.0001   Average accuracy: 0.6792571428571428
+Initial learning rate: 1e-05    Average accuracy: 0.6745714285714286
+
+Epoch count: 3 Tradeoff constant: 1e-05
+Initial learning rate: 0.01     Average accuracy: 0.6808
+Initial learning rate: 0.001    Average accuracy: 0.6766857142857143
+Initial learning rate: 0.0001   Average accuracy: 0.6756
+Initial learning rate: 1e-05    Average accuracy: 0.6775428571428571
