@@ -2,6 +2,8 @@ import numpy as np
 from os import listdir
 import random
 import svm
+import logistic_regression as lr
+import decision_tree as dt
 
 def readFile(path):
     data = []
@@ -47,6 +49,17 @@ def makePrediction(example, weight):
     else:
         return 1
 
+def makeID3Prediction(example, root):
+    while len(root.children) > 0:
+        if example[root.value] == 1:
+            root = root.children[1]
+        else:
+            root = root.children[-1]
+    return float(root.value) # helps w/ svm
+
+def mostFrequent(data):
+    return max(set(data), key = data.count)
+
 # Main
 # setup global constants
 random.seed(17)
@@ -71,24 +84,79 @@ initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001]
 regTradeoffs = [1000, 100, 10, 1, 0.1, 0.01]
 
 # setup logistic regression constants
-# initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
-# regTradeoffs = [1000, 100, 10, 1, 0.1, 0.01]
+initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
+regTradeoffs = [1000, 100, 10, 1, 0.1, 0.01]
 
-# 5-fold cross-validation
-for tradeoff in regTradeoffs:
-    for rate in initialLearningRates:
-        accuracySum = 0
-        for k in range(numFolds):
-            # assign test and training data
-            testFold = folds[k]
-            trainingFolds = []
-            for i in range(numFolds):
-                if i != k:
-                    trainingFolds += folds[i]
-            # train svm
-            weight = svm.stochGradDescent(
-                trainingFolds, rate, tradeoff)
-            accuracySum += recordAccuracy(testFold, weight)
-        print('tradeoff: ' + str(tradeoff) + '\trate: ' + str(rate) + 
-            '\taverage accuracy: ' + str(accuracySum / numFolds))
-    print()
+# 5-fold cross-validation for svm & logistic regression algs
+# for tradeoff in regTradeoffs:
+#     for rate in initialLearningRates:
+#         accuracySum = 0
+#         for k in range(numFolds):
+#             # assign test and training data
+#             testFold = folds[k]
+#             trainingFolds = []
+#             for i in range(numFolds):
+#                 if i != k:
+#                     trainingFolds += folds[i]
+#             # train svm
+#             # weight = svm.stochGradDescent(
+#             #     trainingFolds, rate, tradeoff)
+#             # train logistic regression
+#             weight = lr.stochGradDescent(
+#                 trainingFolds, rate, tradeoff)
+#             # test svm / logistic regression classifier
+#             accuracySum += recordAccuracy(testFold, weight)
+#         print('tradeoff: ' + str(tradeoff) + '\trate: ' + str(rate) + 
+#             '\taverage accuracy: ' + str(accuracySum / numFolds))
+#     print()
+
+# setup svm over trees constants
+initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
+regTradeoffs = [1000, 100, 10, 1, 0.1, 0.01]
+depths = [1, 2, 4, 8]
+
+numTrees = 200
+sampleSize = 223
+attributes = [*range(1, attributeCount)] # ignore the bias during ID3 alg
+# 5-fold cross-validation for svm over trees alg
+for depth in depths:
+    for tradeoff in regTradeoffs:
+        for rate in initialLearningRates:
+            accuracySum = 0
+            for k in range(numFolds):
+                # assign test and training data
+                testFold = folds[k]
+                trainingFolds = []
+                for i in range(numFolds):
+                    if i != k:
+                        trainingFolds += folds[i]
+                # train svm over trees -> trees first...
+                trees = []
+                for i in range(numTrees):      
+                    sample = random.choices(trainingFolds, k = sampleSize)
+                    trees.append(dt.ID3(sample, attributes, 0, depth))
+                trainTransforms = []
+                for example in trainingFolds:
+                    predictions = [example[0]] # start w/ true label
+                    for tree in trees:
+                        predictions.append(makeID3Prediction(example, tree))
+                    predictions.append(1.0) # *add bias
+                    trainTransforms.append(np.array(predictions))
+                # ...now train the svm on the feature transformations
+                weight = svm.stochGradDescent(trainTransforms, 1, 1000)
+                # time for testing
+                testTransforms = []
+                for example in testFold:
+                    predictions = [example[0]] # start w/ true label
+                    for tree in trees:
+                        predictions.append(makeID3Prediction(example, tree))
+                    predictions.append(1.0) # *add bias
+                    testTransforms.append(np.array(predictions))
+                accuracySum += recordAccuracy(testTransforms, weight)
+
+            print('depth ' + str(depth) + '\ttradeoff: ' + str(tradeoff) 
+            + '\trate: ' + str(rate) + '\taverage accuracy: ' + str(accuracySum / numFolds))
+        print()
+                
+
+

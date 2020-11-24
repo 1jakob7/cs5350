@@ -2,15 +2,16 @@ import numpy as np
 import random
 
 def stochGradDescent(data, rate, tradeoff):
+    maxEx = len(data)*5
     size = len(data[0]) - 1 # account for label
     epsilon = random.uniform(0.0001, 0.001)
     w = np.full(size, epsilon)
-    stoppingThreshold = 0.009
+    stoppingThreshold = 0.0005
     prevDiff = 0
     diff = 1
 
     epochCount = 0
-    while abs(diff) > stoppingThreshold:
+    while abs(diff) > stoppingThreshold and epochCount < maxEx:
         currRate = rate/(1+epochCount)
         random.shuffle(data)
         example = data[random.randint(0, len(data)-1)]
