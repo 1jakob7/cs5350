@@ -24,9 +24,9 @@ def stochGradDescent(data, rate, tradeoff):
         diff = abs(diff - prevDiff)
         prevDiff = diff
         epochCount += 1
-        lossList.append(computeLoss(data, w))
+        #lossList.append(computeLoss(data, w))
 
-    return (w, lossList)
+    return w, lossList
 
 def computeLoss(data, w):
     totalLoss = 0

@@ -41,7 +41,6 @@ def getAttributeEntropy(examples, attribute):
     if (pos != 0 and neg != 0):
         negEntropy = (-(pos/tot)*(log2(pos/tot))) - ((neg/tot)*(log2(neg/tot)))
 
-    # return ((posLabelCount / len(examples))*(posEntropy) + (negLabelCount / len(examples))*(negEntropy))
     return ((posAttributeCount / len(examples))*posEntropy) + ((negAttributeCount / len(examples))*negEntropy)
 
 def findHighestInfoGain(examples, attributes):

@@ -70,6 +70,11 @@ foldPath = basePath + 'CVFolds/'
 trainData = readFile(basePath + 'train')
 testData = readFile(basePath + 'test')
 attributeCount = getNumberOfAttributes(trainData)
+# reformat data
+for i in range(len(trainData)):
+    trainData[i] = createVector(trainData[i], attributeCount)
+for i in range(len(testData)):
+    testData[i] = createVector(testData[i], attributeCount)
 # read fold data and reformat
 folds = []
 for fileName in listdir(foldPath):
@@ -118,7 +123,7 @@ with open('svm_loss.csv', 'w', newline='') as file:
         writer.writerow([str(i), lossList[i]])
 # test on svm
 testAccuracy = recordAccuracy(testData, weight)
-print('Test set accuracy: ' + str(testAccuracy))
+print('Test set accuracy: ' + str(testAccuracy) + '\n')
 
 # setup logistic regression constants
 # initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
@@ -127,6 +132,7 @@ print('Test set accuracy: ' + str(testAccuracy))
 initialLearningRates = [0.01]
 regTradeoffs = [10000]
 
+print('Logistic Regression w/ learning rate = 0.01, tradeoff = 10000:')
 # 5-fold cross-validation for logistic regression
 for tradeoff in regTradeoffs:
     for rate in initialLearningRates:
@@ -140,11 +146,10 @@ for tradeoff in regTradeoffs:
                     trainingFolds += folds[i]
             # train logistic regression
             weight = lr.stochGradDescent(
-                trainingFolds, rate, tradeoff)
+                trainingFolds, rate, tradeoff)[0]
             # test logistic regression classifier
             accuracySum += recordAccuracy(testFold, weight)
-        print('tradeoff: ' + str(tradeoff) + '\trate: ' + str(rate) +
-            '\taverage accuracy: ' + str(accuracySum / numFolds))
+        print('Cross-validation accuracy: ' + str(accuracySum / numFolds))
 # training on log reg
 weight, lossList = lr.stochGradDescent(trainData, initialLearningRates[0],
     regTradeoffs[0])
@@ -158,21 +163,21 @@ with open('log_reg_loss.csv', 'w', newline='') as file:
         writer.writerow([str(i), lossList[i]])
 # test on log reg
 testAccuracy = recordAccuracy(testData, weight)
-print('Test set accuracy: ' + str(testAccuracy))
+print('Test set accuracy: ' + str(testAccuracy) + '\n')
 
 # # setup svm over trees constants
 # initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
 # regTradeoffs = [1000, 100, 10, 1, 0.1, 0.01]
 # depths = [1, 2, 4, 8]
 # determined to be the optimal hyper-parameters
-initialLearningRates = [1000]
-regTradeoffs = [0.001]
+initialLearningRates = [0.001]
+regTradeoffs = [1000]
 depths = [8]
 
 numTrees = 200
 sampleSize = 223
 attributes = [*range(1, attributeCount)] # ignore the bias during ID3 alg
-print('SVM Over Trees w/ learning rate = ?, tradeoff = ?, depth = ?:')
+print('SVM Over Trees w/ learning rate = 0.001, tradeoff = 1000, depth = 8:')
 # 5-fold cross-validation for svm over trees
 for depth in depths:
     for tradeoff in regTradeoffs:
@@ -198,7 +203,7 @@ for depth in depths:
                     predictions.append(1.0) # *add bias
                     trainTransforms.append(np.array(predictions))
                 # ...now train the svm on the feature transformations
-                weight = svm.stochGradDescent(trainTransforms, 1, 1000)
+                weight = svm.stochGradDescent(trainTransforms, 1, 1000)[0]
                 # time for testing
                 testTransforms = []
                 for example in testFold:

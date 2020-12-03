@@ -22,11 +22,11 @@ def stochGradDescent(data, rate, tradeoff):
                 prod = -10
             # compute the gradient
             grad = (-yi*xi*np.exp(prod)) / (1+np.exp(prod)) + (2*w)/tradeoff
-            diff = np.dot(w, xi)*yi
+            pred = np.dot(w, xi)*yi
             # update if incorrect prediction
-            if diff <= 0:
+            if pred <= 0:
                 w = w - currRate*grad
-        lossList.append(computeLoss(data, w))
+        #lossList.append(computeLoss(data, w))
 
     return (w, lossList)
 
