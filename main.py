@@ -87,42 +87,45 @@ for fold in folds:
 initialLearningRates = [1]
 regTradeoffs = [1000]
 
-# print('SVM w/ learning rate = 1, tradeoff = 1000:')
-# # 5-fold cross-validation for svm
-# for tradeoff in regTradeoffs:
-#     for rate in initialLearningRates:
-#         accuracySum = 0
-#         for k in range(numFolds):
-#             # assign test and training data
-#             testFold = folds[k]
-#             trainingFolds = []
-#             for i in range(numFolds):
-#                 if i != k:
-#                     trainingFolds += folds[i]
-#             # train svm
-#             weight = svm.stochGradDescent(
-#                 trainingFolds, rate, tradeoff)[0]
-#             # test svm classifier
-#             accuracySum += recordSVMAccuracy(testFold, weight)
-#         print('Cross-validation accuracy: ' + str(accuracySum / numFolds))
-# # training on svm
-# weight, lossList = svm.stochGradDescent(trainData, initialLearningRates[0],
-#     regTradeoffs[0])
-# trainAccuracy = recordSVMAccuracy(trainData, weight)
-# print('Training set accuracy: ' + str(trainAccuracy))
-# # store loss data in csv file
-# with open('svm_loss.csv', 'w', newline='') as file:
-#     writer = csv.writer(file)
-#     writer.writerow(['epoch', 'loss'])
-#     for i in range(len(lossList)):
-#         writer.writerow([str(i), lossList[i]])
-# # test on svm
-# testAccuracy = recordSVMAccuracy(testData, weight)
-# print('Test set accuracy: ' + str(testAccuracy))
+print('SVM w/ learning rate = 1, tradeoff = 1000:')
+# 5-fold cross-validation for svm
+for tradeoff in regTradeoffs:
+    for rate in initialLearningRates:
+        accuracySum = 0
+        for k in range(numFolds):
+            # assign test and training data
+            testFold = folds[k]
+            trainingFolds = []
+            for i in range(numFolds):
+                if i != k:
+                    trainingFolds += folds[i]
+            # train svm
+            weight = svm.stochGradDescent(
+                trainingFolds, rate, tradeoff)[0]
+            # test svm classifier
+            accuracySum += recordAccuracy(testFold, weight)
+        print('Cross-validation accuracy: ' + str(accuracySum / numFolds))
+# training on svm
+weight, lossList = svm.stochGradDescent(trainData, initialLearningRates[0],
+    regTradeoffs[0])
+trainAccuracy = recordAccuracy(trainData, weight)
+print('Training set accuracy: ' + str(trainAccuracy))
+# store loss data in csv file
+with open('svm_loss.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['epoch', 'loss'])
+    for i in range(len(lossList)):
+        writer.writerow([str(i), lossList[i]])
+# test on svm
+testAccuracy = recordAccuracy(testData, weight)
+print('Test set accuracy: ' + str(testAccuracy))
 
 # setup logistic regression constants
-initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
-regTradeoffs = [1000, 100, 10, 1, 0.1, 0.01]
+# initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
+# regTradeoffs = [0.1, 1, 10, 100, 1000, 10000]
+# determined to be the optimal hyper-parameters
+initialLearningRates = [0.01]
+regTradeoffs = [10000]
 
 # 5-fold cross-validation for logistic regression
 for tradeoff in regTradeoffs:
@@ -142,7 +145,20 @@ for tradeoff in regTradeoffs:
             accuracySum += recordAccuracy(testFold, weight)
         print('tradeoff: ' + str(tradeoff) + '\trate: ' + str(rate) +
             '\taverage accuracy: ' + str(accuracySum / numFolds))
-    print()
+# training on log reg
+weight, lossList = lr.stochGradDescent(trainData, initialLearningRates[0],
+    regTradeoffs[0])
+trainAccuracy = recordAccuracy(trainData, weight)
+print('Training set accuracy: ' + str(trainAccuracy))
+# store loss data in csv file
+with open('log_reg_loss.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['epoch', 'loss'])
+    for i in range(len(lossList)):
+        writer.writerow([str(i), lossList[i]])
+# test on log reg
+testAccuracy = recordAccuracy(testData, weight)
+print('Test set accuracy: ' + str(testAccuracy))
 
 # # setup svm over trees constants
 # initialLearningRates = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
@@ -233,6 +249,3 @@ for example in testData:
 # ...now svm
 testAccuracy = recordAccuracy(testTransforms, weight)
 print('Test set accuracy: ' + str(testAccuracy))
-
-
-

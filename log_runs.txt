@@ -1,17 +1,17 @@
 ---epochCount=5---
-tradeoff: 1000  rate: 1 average accuracy: 0.7170403587443946
-tradeoff: 1000  rate: 0.1       average accuracy: 0.7605381165919282
-tradeoff: 1000  rate: 0.01      average accuracy: 0.7645739910313901
-tradeoff: 1000  rate: 0.001     average accuracy: 0.7524663677130043
-tradeoff: 1000  rate: 0.0001    average accuracy: 0.7385650224215247
-tradeoff: 1000  rate: 1e-05     average accuracy: 0.6556053811659192
+tradeoff: 0.1   rate: 1 average accuracy: 0.5139013452914798
+tradeoff: 0.1   rate: 0.1       average accuracy: 0.5031390134529148
+tradeoff: 0.1   rate: 0.01      average accuracy: 0.520627802690583
+tradeoff: 0.1   rate: 0.001     average accuracy: 0.5968609865470851
+tradeoff: 0.1   rate: 0.0001    average accuracy: 0.6914798206278028
+tradeoff: 0.1   rate: 1e-05     average accuracy: 0.6704035874439462
 
-tradeoff: 100   rate: 1 average accuracy: 0.6067264573991031
-tradeoff: 100   rate: 0.1       average accuracy: 0.7107623318385651
-tradeoff: 100   rate: 0.01      average accuracy: 0.7403587443946188
-tradeoff: 100   rate: 0.001     average accuracy: 0.7573991031390135
-tradeoff: 100   rate: 0.0001    average accuracy: 0.7421524663677129
-tradeoff: 100   rate: 1e-05     average accuracy: 0.6493273542600897
+tradeoff: 1     rate: 1 average accuracy: 0.4973094170403588
+tradeoff: 1     rate: 0.1       average accuracy: 0.5246636771300448
+tradeoff: 1     rate: 0.01      average accuracy: 0.5982062780269058
+tradeoff: 1     rate: 0.001     average accuracy: 0.7170403587443945
+tradeoff: 1     rate: 0.0001    average accuracy: 0.7336322869955156
+tradeoff: 1     rate: 1e-05     average accuracy: 0.6452914798206278
 
 tradeoff: 10    rate: 1 average accuracy: 0.515695067264574
 tradeoff: 10    rate: 0.1       average accuracy: 0.5538116591928252
@@ -20,23 +20,23 @@ tradeoff: 10    rate: 0.001     average accuracy: 0.7551569506726457
 tradeoff: 10    rate: 0.0001    average accuracy: 0.742152466367713
 tradeoff: 10    rate: 1e-05     average accuracy: 0.6681614349775785
 
-tradeoff: 1     rate: 1 average accuracy: 0.5004484304932736
-tradeoff: 1     rate: 0.1       average accuracy: 0.5228699551569507
-tradeoff: 1     rate: 0.01      average accuracy: 0.6044843049327354
-tradeoff: 1     rate: 0.001     average accuracy: 0.7174887892376682
-tradeoff: 1     rate: 0.0001    average accuracy: 0.7322869955156951
-tradeoff: 1     rate: 1e-05     average accuracy: 0.6874439461883408
+tradeoff: 100   rate: 1 average accuracy: 0.6058295964125561
+tradeoff: 100   rate: 0.1       average accuracy: 0.7116591928251121
+tradeoff: 100   rate: 0.01      average accuracy: 0.7484304932735426
+tradeoff: 100   rate: 0.001     average accuracy: 0.7466367713004483
+tradeoff: 100   rate: 0.0001    average accuracy: 0.7358744394618834
+tradeoff: 100   rate: 1e-05     average accuracy: 0.6865470852017939
 
-tradeoff: 0.1   rate: 1 average accuracy: 0.5139013452914798
-tradeoff: 0.1   rate: 0.1       average accuracy: 0.47937219730941705
-tradeoff: 0.1   rate: 0.01      average accuracy: 0.5309417040358744
-tradeoff: 0.1   rate: 0.001     average accuracy: 0.5847533632286995
-tradeoff: 0.1   rate: 0.0001    average accuracy: 0.7076233183856502
-tradeoff: 0.1   rate: 1e-05     average accuracy: 0.6695067264573991
+tradeoff: 1000  rate: 1 average accuracy: 0.6959641255605381
+tradeoff: 1000  rate: 0.1       average accuracy: 0.7515695067264574
+tradeoff: 1000  rate: 0.01      average accuracy: 0.7506726457399104
+tradeoff: 1000  rate: 0.001     average accuracy: 0.7618834080717488
+tradeoff: 1000  rate: 0.0001    average accuracy: 0.7538116591928252
+tradeoff: 1000  rate: 1e-05     average accuracy: 0.6663677130044843
 
-tradeoff: 0.01  rate: 1 average accuracy: 0.5139013452914798
-tradeoff: 0.01  rate: 0.1       average accuracy: 0.5139013452914798
-tradeoff: 0.01  rate: 0.01      average accuracy: 0.4798206278026905
-tradeoff: 0.01  rate: 0.001     average accuracy: 0.4937219730941703
-tradeoff: 0.01  rate: 0.0001    average accuracy: 0.5641255605381166
-tradeoff: 0.01  rate: 1e-05     average accuracy: 0.7237668161434978
+tradeoff: 10000 rate: 1 average accuracy: 0.7376681614349775
+tradeoff: 10000 rate: 0.1       average accuracy: 0.7623318385650224
+tradeoff: 10000 rate: 0.01      average accuracy: 0.7641255605381165
+tradeoff: 10000 rate: 0.001     average accuracy: 0.7502242152466367
+tradeoff: 10000 rate: 0.0001    average accuracy: 0.7470852017937221
+tradeoff: 10000 rate: 1e-05     average accuracy: 0.6735426008968611
