@@ -1,5 +1,4 @@
 ---stoppingThreshold=0.009, maxEx=len(data)*10---
-
 tradeoff: 1000  rate: 1 average accuracy: 0.6874439461883408
 tradeoff: 1000  rate: 0.1       average accuracy: 0.5547085201793722
 tradeoff: 1000  rate: 0.01      average accuracy: 0.5161434977578475
@@ -75,3 +74,6 @@ tradeoff: 0.01  rate: 0.001     average accuracy: 0.5139013452914798
 tradeoff: 0.01  rate: 0.0001    average accuracy: 0.5139013452914798
 
 ---------
+---stoppingThreshold=0.0001---
+tradeoff: 1000  rate: 1 average accuracy: 0.7556053811659194
+    ... going with this one
