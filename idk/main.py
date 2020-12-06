@@ -41,13 +41,20 @@ def createVectorsFromMiscs(data, labels):
         categories.append(list(attr[key]))
     for i in range(len(data)):
         for j in range(len(data[i])):
-            data[i][j] = categories[j].index(data[i][j].split(':')[1])
+            spl = data[i][j].split(':')
+            data[i][j] = categories[j].index(spl[1])
         data[i][:0] = [int(labels[i])]
     return data
 
 
-def getNumberOfAttributes(data):
-    hmmm = 0
+def getAttributes(data):
+    max = 0
+    attributes = []
+    for example in data:
+        if (len(example) > max):
+            max = len(example)
+    return [*range(1, max)]
+
 
 # Main
 # setup global constants...
@@ -60,5 +67,6 @@ trainMiscData = readMiscFile(basePath + 'misc-attributes/misc-attributes-train.c
 
 labels = extractLabels(trainData)
 trainMiscData = createVectorsFromMiscs(trainMiscData, labels)
+attributes = getAttributes(trainMiscData)
 
 folds = []
