@@ -38,7 +38,7 @@ def makePrediction(root, example):
 
 # Main
 # setup training data
-basePath = 'project_data/data/bag-of-words/'
+basePath = '../project_data/data/bag-of-words/'
 trainData = readFile(basePath + 'bow.train.libsvm')
 tAttributes = getTrimmedAttributes(trainData, 250) # take top 250 attributes
 

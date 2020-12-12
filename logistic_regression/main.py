@@ -84,7 +84,7 @@ def makePredictionNoLabel(example, weight):
 # Main
 # setup global constants...
 random.seed(17)
-basePath = 'project_data/data/'
+basePath = '../project_data/data/'
 
 # read initial data
 # glove data necessary for label extraction

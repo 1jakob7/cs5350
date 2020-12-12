@@ -63,7 +63,7 @@ epochCount = 5
 learningRates = [1]
 
 # setup training data - 'tfidf'
-basePath = 'project_data/data/tfidf/'
+basePath = '../project_data/data/tfidf/'
 trainData = readFile(basePath + 'tfidf.train.libsvm')
 
 # get number of attributes and reformat training data

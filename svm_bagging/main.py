@@ -67,7 +67,7 @@ initialLearningRates = [0.01]
 tradeoffs = [0.0001]
 
 # setup training data - 'tfidf'
-basePath = 'project_data/data/tfidf/'
+basePath = '../project_data/data/tfidf/'
 trainData = readFile(basePath + 'tfidf.train.libsvm')
 
 # reformat training data 
