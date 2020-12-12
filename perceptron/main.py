@@ -59,11 +59,8 @@ def makePrediction(example, w):
 # setup constants
 random.seed(42)
 epochCount = 5
-learningRates = [1, 0.1, 0.01, 0.001]
-
-# setup training data - 'glove'
-# basePath = 'project_data/data/glove/'
-# trainData = readFile(basePath + 'glove.train.libsvm')
+#learningRates = [1, 0.1, 0.01, 0.001]
+learningRates = [1]
 
 # setup training data - 'tfidf'
 basePath = 'project_data/data/tfidf/'
@@ -73,10 +70,51 @@ trainData = readFile(basePath + 'tfidf.train.libsvm')
 attributeCount = getNumberOfAttributes(trainData)
 for i in range(len(trainData)):
     trainData[i] = createVector(trainData[i], attributeCount)
+
+# 5-fold cross-validation to test hyper-parameter: learningRate
+foldCount = 5
+examplesPerFold = int(len(trainData) / foldCount)
+folds = {}
+for i in range(foldCount):
+    fold = []
+    startIndex = i * examplesPerFold
+    endIndex = startIndex + examplesPerFold
+    for j in range(startIndex, endIndex):
+        fold.append(trainData[j])
+    folds[i] = fold
+
+print('Averaged perceptron')
+print('Hyper-parameters: learning rate = 1, epochs = 5')
+
+# avgAccuracies = []
+# avgUpdates = []
+for rate in learningRates:
+    accuracySum = 0
+    updatesSum = 0
+    for k in range(len(folds)):
+        # assign test and training data
+        testFold = folds[k]
+        trainingFolds = []
+        for i in range(foldCount):
+            if i != k:
+                trainingFolds = trainingFolds + folds[i]
+        # train the perceptron, result holds the averaged
+        # weight vector and the number of updates performed
+        averagedResult = ap.averagedPerceptron(
+            trainingFolds, epochCount, rate)
+        accuracySum += recordAccuracy(
+            testFold, averagedResult[0])
+        updatesSum += averagedResult[1]
+    print('Cross-validation accuracy: ' + str(accuracySum / foldCount))
+    # avgAccuracies.append(accuracySum / foldCount)
+    # avgUpdates.append(updatesSum / foldCount)
+
 # train averaged perceptron
 averagedResult = ap.averagedPerceptron(
     trainData, epochCount, learningRates[0])
-print('Performed ' + str(averagedResult[1]) + ' updates.')
+trainAccuracy = recordAccuracy(trainData, averagedResult[0])
+print('Training accuracy: ' + str(trainAccuracy))
+#print('Performed ' + str(averagedResult[1]) + ' updates.')
 
 # setup test data and record accuracy
 testData = readFile(basePath + 'tfidf.test.libsvm')
@@ -94,44 +132,3 @@ print('Test accuracy: ' + str(testAccuracy))
 #         evalData[i] = createVector(evalData[i], attributeCount)
 #         result = makePrediction(evalData[i], averagedResult[0])
 #         writer.writerow([str(i), result])
-
-
-# # 5-fold cross-validation to test hyper-parameter: learningRate
-# foldCount = 5
-# examplesPerFold = int(len(trainData) / foldCount)
-# folds = {}
-# for i in range(foldCount):
-#     fold = []
-#     startIndex = i * examplesPerFold
-#     endIndex = startIndex + examplesPerFold
-#     for j in range(startIndex, endIndex):
-#         fold.append(trainData[j])
-#     folds[i] = fold
-
-# avgAccuracies = []
-# avgUpdates = []
-# for rate in learningRates:
-#     accuracySum = 0
-#     updatesSum = 0
-#     for k in range(len(folds)):
-#         # assign test and training data
-#         testFold = folds[k]
-#         trainingFolds = []
-#         for i in range(foldCount):
-#             if i != k:
-#                 trainingFolds = trainingFolds + folds[i]
-#         # train the perceptron, result holds the averaged
-#         # weight vector and the number of updates performed
-#         averagedResult = ap.averagedPerceptron(
-#             trainingFolds, epochCount, rate)
-#         accuracySum += recordAccuracy(
-#             testFold, averagedResult[0])
-#         updatesSum += averagedResult[1]
-#     avgAccuracies.append(accuracySum / foldCount)
-#     avgUpdates.append(updatesSum / foldCount)
-
-# # print results...
-# print('With an epoch count of ' + str(epochCount) + '...')
-# for i in range(len(avgAccuracies)):
-#     print('Learning rate: ' + str(learningRates[i]) + '\tAverage accuracy: '
-#     + str(avgAccuracies[i]) + '\tAverage updates: ' + str(avgUpdates[i]))

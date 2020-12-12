@@ -57,29 +57,42 @@ def createVectorsFromMiscsNoLabel(data):
             data[i].append(1) # add bias
     return np.array(data)
 
-def recordAccuracy(data, weight):
+def recordAccuracy(data, weightList):
     total = len(data)
     correctCount = 0
     for example in data:
         trueLabel = example[0]
-        if makePrediction(example, weight) == trueLabel:
+        if makePrediction(example, weightList) == trueLabel:
             correctCount += 1
     return correctCount / total
 
-def makePrediction(example, weight):
-    guess = np.dot(example[1:], weight)
-    if guess < 0:
+def makePrediction(example, weightList):
+    negCount = 0
+    posCount = 0
+    for weight in weightList:
+        guess = np.dot(example[1:], weight)
+        if guess < 0:
+            negCount += 1
+        else:
+            posCount += 1
+    if negCount > posCount:
         return 0
     else:
         return 1
 
 def makePredictionNoLabel(example, weight):
-    guess = np.dot(example, weight)
-    if guess < 0:
+    negCount = 0
+    posCount = 0
+    for weight in weightList:
+        guess = np.dot(example, weight)
+        if guess < 0:
+            negCount += 1
+        else:
+            posCount += 1
+    if negCount > posCount:
         return 0
     else:
         return 1
-
 
 # Main
 # setup global constants...
@@ -114,17 +127,17 @@ for i in range(foldCount):
     folds[i] = fold
 
 # hyper-params to test for logisitic regression
-# initialLearningRates = [10, 1, 0.1, 0.01]
-# regTradeoffs = [10000, 1000, 100, 10]
-# epochs = [15000, 12500, 10000, 7500] # working w/ epochs this large avoids variability
+# initialLearningRates = [10, 1, 0.1, 0.01, 0.001]
+# regTradeoffs = [10000, 1000, 100, 10, 1]
+# epochs = [1000, 1500, 2000, 2500, 3000]
 
-# best discovered hyper-params
-initialLearningRates = [10]
-regTradeoffs = [10000]
-epochs = [12500]
+initialLearningRates = [0.1]
+regTradeoffs = [100]
+epochs = [2500]
+bagCount = 5
 
-print('Logistic regression (stochastic sub-gradient descent):')
-print('Hyper-parameters: learning rate = 10, tradeoff = 10000, epochs = 12500')
+print('Logistic regression (stochastic sub-gradient descent) w/ bagging:')
+print('Hyper-parameters: learning rate = 0.1, tradeoff = 100, epochs = 2500, bags = 17')
 for epoch in epochs:
     for tradeoff in regTradeoffs:
         for rate in initialLearningRates:
@@ -137,24 +150,28 @@ for epoch in epochs:
                     if i != k:
                         trainingFolds += folds[i]
                 # train
-                weight = lr.stochSubGradDescent(trainingFolds, rate, tradeoff, epoch)
+                weightList = []
+                for i in range(bagCount):
+                    weightList.append(lr.stochSubGradDescent(trainingFolds, rate, tradeoff, epoch))
                 # test
-                accuracySum += recordAccuracy(testFold, weight)
+                accuracySum += recordAccuracy(testFold, weightList)
             print('Cross-validation accuracy: ' + str(accuracySum / foldCount))
 
 # train on full dataset
-weight = lr.stochSubGradDescent(trainMiscData, 
-    initialLearningRates[0], regTradeoffs[0], epochs[0])
+weightList = []
+for i in range(bagCount):
+    weightList.append(lr.stochSubGradDescent(trainMiscData, 
+        initialLearningRates[0], regTradeoffs[0], epochs[0]))
 # test on training set
-trainAccuracy = recordAccuracy(trainMiscData, weight)
+trainAccuracy = recordAccuracy(trainMiscData, weightList)
 print('Train accuracy: ' + str(trainAccuracy))
 # test on test set
-testAccuracy = recordAccuracy(testMiscData, weight)
+testAccuracy = recordAccuracy(testMiscData, weightList)
 print('Test accuracy: ' + str(testAccuracy))
 # test on eval data and record results
-# with open('logisitc_regression_predictions.csv', 'w', newline='') as file:
+# with open('log_reg_bag_predictions.csv', 'w', newline='') as file:
 #     writer = csv.writer(file)
 #     writer.writerow(['example_id', 'label'])
 #     for i in range(len(evalMiscData)):
-#         result = makePredictionNoLabel(evalMiscData[i], weight)
+#         result = makePredictionNoLabel(evalMiscData[i], weightList)
 #         writer.writerow([str(i), result])

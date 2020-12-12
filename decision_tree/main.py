@@ -42,32 +42,7 @@ basePath = 'project_data/data/bag-of-words/'
 trainData = readFile(basePath + 'bow.train.libsvm')
 tAttributes = getTrimmedAttributes(trainData, 250) # take top 250 attributes
 
-maxDepth = 68
-root = depthRestrictedID3(trainData, tAttributes, 0, maxDepth) # max-depth of 68 - found to be best
-
-# setup test data
-# testData = readFile(basePath + 'bow.test.libsvm')
-# # test accuracy
-# count = 0
-# correct = 0
-# for example in testData:
-#             label = example[0]
-#             result = makePrediction(root, example)
-#             if result == label:
-#                 correct += 1
-#             count += 1
-# print('Test Run Accuracy: ' + str(correct / count) + ' w/ Depth: ' + str(maxDepth) + '\n')
-
-# setup eval data
-evalData = readFile(basePath + 'bow.eval.anon.libsvm')
-# store eval predictions in .csv file
-with open('decision_tree_predictions.csv', 'w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(['example_id', 'label'])
-    for i in range(len(evalData)):
-        result = makePrediction(root, evalData[i])
-        writer.writerow([str(i), result])
-
+maxDepths = [68]
 
 # 5-fold cross-validation to test hyper-parameter: depth
 foldCount = 5
@@ -81,10 +56,12 @@ for i in range(foldCount):
         fold.append(trainData[j])
     folds[i] = fold
 
+print('Decision tree w/ limited depth')
+print('Hyper-parameter: max depth = 68')
+
 bestDepth = 0
 greatestAccuracy = 0
-for k in range(1): # depth (70-100)
-    k += 87
+for depth in maxDepths:
     accuracies = []
     for i in range(foldCount):
         # split data into training set and test set
@@ -93,7 +70,7 @@ for k in range(1): # depth (70-100)
         for j in range(foldCount):
             if j != i:
                 trainingFolds = trainingFolds + folds[j]
-        root = depthRestrictedID3(trainingFolds, tAttributes, 0, k)
+        root = depthRestrictedID3(trainingFolds, tAttributes, 0, depth)
         # test tree against withheld set
         count = 0
         correct = 0
@@ -108,6 +85,39 @@ for k in range(1): # depth (70-100)
     if (mean > greatestAccuracy):
         greatestAccuracy = mean
         bestDepth = k
-    print('Run Accuracy: ' + str(mean) + ' w/ Depth: ' + str(k))
+    print('Cross-validation accuracy: ' + str(sum(accuracies) / len(accuracies)))
+#print('\nBest Accuracy = ' + str(greatestAccuracy) + ' w/ Depth: ' + str(bestDepth))
 
-print('\nBest Accuracy = ' + str(greatestAccuracy) + ' w/ Depth: ' + str(bestDepth))
+root = depthRestrictedID3(trainData, tAttributes, 0, maxDepths[0]) # max-depth of 68 - found to be best
+# train accuracy
+count = 0
+correct = 0
+for example in trainData:
+            label = example[0]
+            result = makePrediction(root, example)
+            if result == label:
+                correct += 1
+print('Training accuracy: ' + str(correct / count))
+
+# setup test data
+testData = readFile(basePath + 'bow.test.libsvm')
+# test accuracy
+count = 0
+correct = 0
+for example in testData:
+            label = example[0]
+            result = makePrediction(root, example)
+            if result == label:
+                correct += 1
+            count += 1
+print('Test accuracy: ' + str(correct / count))
+
+# setup eval data
+# evalData = readFile(basePath + 'bow.eval.anon.libsvm')
+# # store eval predictions in .csv file
+# with open('decision_tree_predictions.csv', 'w', newline='') as file:
+#     writer = csv.writer(file)
+#     writer.writerow(['example_id', 'label'])
+#     for i in range(len(evalData)):
+#         result = makePrediction(root, evalData[i])
+#         writer.writerow([str(i), result])

@@ -1,8 +1,6 @@
 import random
 import numpy as np
 
-random.seed(17) # for consistency
-
 def stochGradDescent(data, learningRate, tradeoff, epochCount):
     vLength = len(data[0])
     weight = [0] * (vLength - 1) # ignore embedded label
